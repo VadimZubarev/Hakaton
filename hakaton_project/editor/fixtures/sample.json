@@ -1,0 +1,2 @@
+[{"model": "editor.Formula", "pk": 1, "fields": {"name": 1, "formula_text": "\\sin ^2 \\theta  + \\cos ^2 \\theta  = 1"}}, 
+{"model": "editor.Formula", "pk": 2, "fields": {"name": 2, "formula_text": "\\sin \\theta  = \\frac{{{\\rm{Opposite Side}}}}{{{\\rm{Hypotenuse}}}}"}}]

@@ -1,0 +1,173 @@
+<!-- 
+This HTML document creates a Math Formula Editor using KaTeX for rendering LaTeX 
+mathematical expressions. It includes a styled interface with a textarea for input, 
+buttons for inserting common mathematical symbols, and a section for displaying 
+the rendered formula. The page also features a button to navigate to a comparator 
+page. JavaScript functions handle symbol insertion, textarea auto-resizing, and 
+formula rendering.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Editor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 3rem;
+        }
+        .swith-page {
+            padding: 10px 20px;             /* Spacing inside the button (top/bottom, left/right) */
+            background-color: #007bff;      /* Blue background */
+            color: white;                   /* White text */
+            border: none;                   /* No border */
+            border-radius: 5px;             /* Rounded corners */
+            cursor: pointer;               /* Pointer cursor when hovered */
+            font-size: 24px;                /* Larger font size */
+            display: inline-block;          /* To control layout better if needed */
+        }
+        .swith-page:hover {
+            background-color: #0056b3;      /* Darker blue when hovered */
+        }
+        .swith-page:active {
+            background-color: #004085;      /* Even darker blue when clicked */
+        }
+        .editor {
+            width: fit-content;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .editor textarea {
+            width: 100%;
+            height: auto;
+            min-height: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .editor .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .editor button {
+            padding: 20px 30px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .editor button:hover {
+            background-color: #0056b3;
+        }     
+        .result {
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .result h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        #rendered-formula {
+            min-height: 100px;
+            font-size: 2rem;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Math Formula Editor</h1>
+    <div>
+        <a href="{% url 'comparator' %}">
+            <button class="swith-page">
+                Go to Comparator
+            </button>
+        </a>
+    </div>
+    <div class="editor">
+        <textarea id="formula-input" placeholder="Write your formula here..." oninput="autoResize(this)"></textarea>
+
+        <div class="buttons">
+            <button onclick="addSymbol('+')">+</button>
+            <button onclick="addSymbol('-')">-</button>
+            <button onclick="addSymbol('\\times')">×</button>
+            <button onclick="addSymbol('\\div')">÷</button>
+            <button onclick="addSymbol('^{}')">x<sup>2</sup></button>
+            <button onclick="addSymbol('\\sqrt{}')">√</button>
+            <button onclick="addSymbol('\\frac{}{}')">Fraction</button>
+            <button onclick="addSymbol('\\sum_{}^{}')">Sum</button>
+            <button onclick="addSymbol('\\int_{}^{}')">Integral</button>
+            <button onclick="addSymbol('\\log(x)')">Logarithm</button>
+        </div>
+
+        <div class="result">
+            <h2>Graphical Representation:</h2>
+            <div id="rendered-formula" style="min-height: 100px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const formulaInput = document.getElementById('formula-input');
+        const renderedFormula = document.getElementById('rendered-formula');
+
+        function addSymbol(symbol) {
+            const cursorPosition = formulaInput.selectionStart;
+            const textBefore = formulaInput.value.substring(0, cursorPosition);
+            const textAfter = formulaInput.value.substring(cursorPosition);
+            
+            if (symbol.includes('{}')) {
+                formulaInput.value = `${textBefore}${symbol}${textAfter}`;
+                formulaInput.selectionStart = formulaInput.selectionEnd = cursorPosition + symbol.indexOf('{}') + 1;
+            } else {
+                formulaInput.value = `${textBefore}${symbol}${textAfter}`;
+                formulaInput.selectionStart = formulaInput.selectionEnd = cursorPosition + symbol.length;
+            }
+            formulaInput.focus();
+            renderFormula();
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function renderFormula() {
+            const formula = formulaInput.value;
+            try {
+                renderedFormula.innerHTML = '';
+                katex.render(formula, renderedFormula, {
+                    throwOnError: false
+                });
+            } catch (error) {
+                renderedFormula.innerHTML = '<span style="color: red;">Invalid LaTeX syntax</span>';
+            }
+        }
+
+        formulaInput.addEventListener('input', renderFormula);
+    </script>
+</body>
+</html>
