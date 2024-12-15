@@ -89,15 +89,19 @@ def comparator(request):
             for formula_from_db in stored_formulas:
                 similarity = cosine_similarity_latex(formula, formula_from_db.formula_text)
                 
-                if similarity > 0.5:
+                if similarity > 0.7:
                     matched_formulas.append(formula_from_db)
                     similarity_scores.append(similarity)
     
     matched_formulas_with_scores = zip(matched_formulas, similarity_scores)
+    
+    matched_formulas_with_scores_list = list(matched_formulas_with_scores)
+    sorted_matched_formulas_with_scores = sorted(matched_formulas_with_scores_list, key=lambda x: x[1], reverse=True)
+    
     if not matched_formulas:
-        matched_formulas_with_scores = 0
+        sorted_matched_formulas_with_scores = 0
 
     return render(request, "comparator.html", {
         "formula": formula, 
-        "matched_formulas_with_scores": matched_formulas_with_scores,
+        "matched_formulas_with_scores": sorted_matched_formulas_with_scores,
     })
